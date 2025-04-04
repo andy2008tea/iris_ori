@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 import sys
@@ -99,7 +100,10 @@ class ActorCritic(nn.Module):
 
     def compute_loss(self, batch: Batch, tokenizer: Tokenizer, world_model: WorldModel, imagine_horizon: int, gamma: float, lambda_: float, entropy_weight: float, **kwargs: Any) -> LossWithIntermediateLosses:
         assert not self.use_original_obs
+        start_time = time.time()
         outputs = self.imagine(batch, tokenizer, world_model, horizon=imagine_horizon)
+        end_time = time.time()
+        print(f"[Timer] actor_critic.imagine took {end_time - start_time:.3f} seconds")
 
         with torch.no_grad():
             lambda_returns = compute_lambda_returns(
